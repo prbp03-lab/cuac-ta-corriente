@@ -5,6 +5,7 @@ export interface Coin {
   value: CurrencyValue;
   x: number;
   y: number;
+  side: 'debe' | 'haber';
 }
 
 export interface Level {
@@ -15,6 +16,7 @@ export interface Level {
   allowedCoins: CurrencyValue[];
   pacoMessage: string;
   concept: string;
+  isMixed?: boolean; // If true, randomly assign coins to Debe/Haber
 }
 
 export const LEVELS: Level[] = [
@@ -40,10 +42,11 @@ export const LEVELS: Level[] = [
     id: 3,
     title: 'Activo vs. Pasivo',
     instruction: 'Identifica los ingresos y gastos.',
-    targetAmount: 5.00, // Balance goal
+    targetAmount: 5.00,
     allowedCoins: [1, 2, 0.5],
     pacoMessage: '¡Cuidado! Ese gasto es un pasivo, resta de tu caja. Separa las ganancias.',
-    concept: 'Diferenciar Ingresos (+) de Gastos (-)'
+    concept: 'Diferenciar Ingresos (+) de Gastos (-)',
+    isMixed: true
   },
   {
     id: 4,
@@ -52,6 +55,7 @@ export const LEVELS: Level[] = [
     targetAmount: 2.50,
     allowedCoins: [1, 0.5, 0.2, 0.1],
     pacoMessage: '¿Hemos ganado o perdido hoy? Calcula el saldo final.',
-    concept: 'Ingresos - Gastos = Saldo'
+    concept: 'Ingresos - Gastos = Saldo',
+    isMixed: true
   }
 ];

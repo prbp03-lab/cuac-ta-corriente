@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [currentBalance, setCurrentBalance] = useState(0);
   const [pacoState, setPacoState] = useState<'idle' | 'happy' | 'thinking' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [feedbacks, setFeedbacks] = useState<{ id: string; text: string; x: number; y: number; side: string }[]>([]);
 
   const currentLevel = LEVELS[currentLevelIdx];
 
@@ -24,11 +25,14 @@ const App: React.FC = () => {
     // Generate some random coins based on allowed coins for the level
     for (let i = 0; i < 8; i++) {
       const randomVal = level.allowedCoins[Math.floor(Math.random() * level.allowedCoins.length)];
+      const side = level.isMixed ? (Math.random() > 0.6 ? 'haber' : 'debe') : 'debe';
+
       newCoins.push({
         id: `coin-${i}-${Math.random()}`,
         value: randomVal,
         x: 40 + Math.random() * 40, // 40-80% width
-        y: 40 + Math.random() * 30  // 40-70% height
+        y: 40 + Math.random() * 30, // 40-70% height
+        side
       });
     }
     setTableCoins(newCoins);
@@ -39,8 +43,19 @@ const App: React.FC = () => {
 
   const handleCoinClick = (coin: Coin) => {
     setTableCoins(prev => prev.filter(c => c.id !== coin.id));
-    const nextBalance = Number((currentBalance + coin.value).toFixed(2));
+
+    // Accounting logic: Debe increases balance, Haber decreases it
+    const valueChange = coin.side === 'debe' ? coin.value : -coin.value;
+    const nextBalance = Number((currentBalance + valueChange).toFixed(2));
     setCurrentBalance(nextBalance);
+
+    // Add feedback animation
+    const feedbackId = Math.random().toString();
+    const feedbackText = `${coin.side === 'debe' ? '+' : '-'}${coin.value.toFixed(2)}€ (${coin.side.toUpperCase()})`;
+    setFeedbacks(prev => [...prev, { id: feedbackId, text: feedbackText, x: coin.x, y: coin.y, side: coin.side }]);
+    setTimeout(() => {
+      setFeedbacks(prev => prev.filter(f => f.id !== feedbackId));
+    }, 2000);
 
     if (nextBalance === currentLevel.targetAmount) {
       setPacoState('happy');
@@ -52,11 +67,11 @@ const App: React.FC = () => {
         } else {
           setMessage('¡Has completado todos los niveles! ¡Eres un experto en Cuac-ta Corriente!');
         }
-      }, 3000);
-    } else if (nextBalance > currentLevel.targetAmount) {
+      }, 5000); // Increased from 3000
+    } else if (nextBalance > currentLevel.targetAmount || (nextBalance < 0 && currentLevel.targetAmount > 0)) {
       setPacoState('error');
-      setMessage('¡Cuac! Eso es demasiado. Prueba otra vez.');
-      setTimeout(() => initLevel(currentLevelIdx), 2000);
+      setMessage('¡Cuac! El balance no cuadra. Prueba otra vez.');
+      setTimeout(() => initLevel(currentLevelIdx), 4000); // Increased from 2000
     }
   };
 
@@ -76,6 +91,21 @@ const App: React.FC = () => {
           opacity: 0.8
         }}
       />
+
+      {/* Floating Feedbacks */}
+      {feedbacks.map(f => (
+        <div
+          key={f.id}
+          className={`float-feedback ${f.side}`}
+          style={{
+            left: `${f.x}%`,
+            top: `${f.y}%`,
+            animation: 'floatUp 2s ease-out forwards'
+          }}
+        >
+          {f.text}
+        </div>
+      ))}
 
       {/* UI Header */}
       <div style={{
@@ -99,6 +129,7 @@ const App: React.FC = () => {
           className="balance-panel"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
+          key={currentBalance}
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
@@ -118,7 +149,7 @@ const App: React.FC = () => {
           {tableCoins.map(coin => (
             <motion.div
               key={coin.id}
-              className="coin-element"
+              className={`coin-element ${coin.side}`}
               initial={{ scale: 0, opacity: 0, rotate: -180 }}
               animate={{ scale: 1, opacity: 1, left: `${coin.x}%`, top: `${coin.y}%`, rotate: 0 }}
               exit={{ scale: 1.5, opacity: 0, filter: 'blur(10px)' }}
