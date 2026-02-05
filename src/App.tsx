@@ -135,7 +135,7 @@ const App: React.FC = () => {
 
       {/* Paco and Speech Bubble */}
       <motion.img
-        src="/assets/paco.png"
+        src="/assets/img-pato.webp"
         className="paco-duck"
         animate={{
           y: pacoState === 'happy' ? [0, -20, 0] : 0,
