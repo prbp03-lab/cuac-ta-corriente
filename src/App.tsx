@@ -80,61 +80,54 @@ const App: React.FC = () => {
       {/* UI Header */}
       <div style={{
         position: 'relative',
-        padding: '20px',
+        padding: '30px 40px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         color: 'white',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
         zIndex: 5
       }}>
-        <div>
-          <h1>{currentLevel.title}</h1>
-          <p>{currentLevel.concept}</p>
-        </div>
-        <div style={{
-          background: 'rgba(255,255,255,0.2)',
-          padding: '10px 20px',
-          borderRadius: '30px',
-          fontSize: '24px',
-          fontWeight: 'bold',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.3)'
-        }}>
-          Saldo: {currentBalance.toFixed(2)}€ / {currentLevel.targetAmount.toFixed(2)}€
-        </div>
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+        >
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>{currentLevel.title}</h1>
+          <p style={{ fontSize: '1.2rem', opacity: 0.9 }}>{currentLevel.concept}</p>
+        </motion.div>
+
+        <motion.div
+          className="balance-panel"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{currentBalance.toFixed(2)}€</div>
+          </div>
+          <div style={{ height: '40px', width: '1px', background: 'rgba(255,255,255,0.3)' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Meta</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{currentLevel.targetAmount.toFixed(2)}€</div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Main Table Area */}
-      <div className="table-area" style={{ flex: 1, position: 'relative' }}>
+      <div className="table-area">
         <AnimatePresence>
           {tableCoins.map(coin => (
             <motion.div
               key={coin.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1, left: `${coin.x}%`, top: `${coin.y}%` }}
-              exit={{ scale: 0, y: 100, opacity: 0 }}
+              className="coin-element"
+              initial={{ scale: 0, opacity: 0, rotate: -180 }}
+              animate={{ scale: 1, opacity: 1, left: `${coin.x}%`, top: `${coin.y}%`, rotate: 0 }}
+              exit={{ scale: 1.5, opacity: 0, filter: 'blur(10px)' }}
               onClick={() => handleCoinClick(coin)}
-              style={{
-                position: 'absolute',
-                cursor: 'pointer',
-                width: '60px',
-                height: '60px',
-                background: 'radial-gradient(circle, #FFD700 0%, #B8860B 100%)',
-                borderRadius: '50%',
-                border: '2px solid #DAA520',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                color: '#4B3621',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-              }}
-              whileHover={{ scale: 1.1, rotate: 10 }}
+              style={{ position: 'absolute' }}
+              whileHover={{ scale: 1.15, rotate: 15, boxShadow: '0 10px 20px rgba(0,0,0,0.4)' }}
               whileTap={{ scale: 0.9 }}
             >
-              {coin.value}€
+              {coin.value < 1 ? `${(coin.value * 100).toFixed(0)}c` : `${coin.value}€`}
             </motion.div>
           ))}
         </AnimatePresence>
