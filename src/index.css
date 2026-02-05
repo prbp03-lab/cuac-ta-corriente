@@ -1,0 +1,124 @@
+:root {
+  --color-pond-blue: #4A90E2;
+  --color-grass-green: #4CAF50;
+  --color-earth-brown: #795548;
+  --color-paco-yellow: #FFC107;
+  --color-error-red: #F44336;
+  --color-success-green: #8BC34A;
+  --color-text-dark: #333333;
+  --color-bg-light: #F5F5F5;
+  --font-main: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  background: #2D5A27;
+  /* Fallback */
+}
+
+.table-area {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.paco-duck {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 350px;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+}
+
+.speech-bubble {
+  position: absolute;
+  bottom: 220px;
+  left: 320px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  max-width: 320px;
+  z-index: 20;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 40px;
+  border-width: 15px 15px 0 15px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+}
+
+.coin-element {
+  position: absolute;
+  cursor: pointer;
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle at 30% 30%, #FFD700 0%, #B8860B 100%);
+  border-radius: 50%;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #4B3621;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.coin-element::before {
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+}
+
+.balance-panel {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  padding: 15px 30px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
