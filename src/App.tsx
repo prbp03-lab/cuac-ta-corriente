@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import type { Level, Coin } from './logic/gameLogic';
+import type { Coin } from './logic/gameLogic';
 import { LEVELS } from './logic/gameLogic';
 import './index.css';
 
