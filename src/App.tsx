@@ -48,7 +48,7 @@ const App: React.FC = () => {
     }
 
     // 2. Add "Noise" or "Neutral pairs" for mixed levels or to increase coin count
-    const minCoins = level.id === 4 ? 8 : 6;
+    const minCoins = level.id === 4 ? 14 : 10; // Increased from 8/6 to make it last longer
     while (newCoins.length < minCoins) {
       const randomVal = level.allowedCoins[Math.floor(Math.random() * level.allowedCoins.length)];
       if (level.isMixed) {
@@ -86,7 +86,16 @@ const App: React.FC = () => {
 
     setTableCoins(newCoins);
     setCurrentBalance(0);
-    setJournal([]);
+
+    // Seed journal with initial debt/target in Haber
+    const initialEntry: JournalEntry = {
+      id: `initial-${idx}`,
+      value: level.targetAmount,
+      side: 'haber',
+      concept: level.id === 1 ? 'Deuda Nutria' : 'Factura Pendiente'
+    };
+    setJournal([initialEntry]);
+
     setMessage(level.pacoMessage);
     setPacoState('thinking');
   };
@@ -274,33 +283,44 @@ const App: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              <AnimatePresence>
-                {journal.map(entry => (
-                  <motion.tr
-                    key={entry.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <td>{entry.concept}</td>
-                    <td className="entry-debe">{entry.side === 'debe' ? `${entry.value.toFixed(2)}€` : ''}</td>
-                    <td className="entry-haber">{entry.side === 'haber' ? `${entry.value.toFixed(2)}€` : ''}</td>
-                  </motion.tr>
-                ))}
-              </AnimatePresence>
-              {journal.length === 0 && (
+              {journal.length === 0 ? (
                 <tr>
                   <td colSpan={3} style={{ textAlign: 'center', opacity: 0.5, padding: '20px' }}>
                     Esperando transacciones...
                   </td>
                 </tr>
+              ) : (
+                <AnimatePresence>
+                  {journal.map((entry, index) => (
+                    <motion.tr
+                      key={entry.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0 }}
+                      style={{
+                        background: index === 0 && entry.id.startsWith('entry') ? 'rgba(255,255,255,0.05)' : 'none',
+                        borderLeft: entry.id.startsWith('initial') ? '4px solid #FF7043' : 'none'
+                      }}
+                    >
+                      <td>{entry.concept}</td>
+                      <td className="entry-debe">{entry.side === 'debe' ? `${entry.value.toFixed(2)}€` : ''}</td>
+                      <td className="entry-haber">{entry.side === 'haber' ? `${entry.value.toFixed(2)}€` : ''}</td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               )}
             </tbody>
           </table>
         </div>
         <div className="journal-footer">
-          <span>SALDO NETO:</span>
-          <span>{currentBalance.toFixed(2)}€</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>TOTAL DEBE</span>
+            <span>{journal.reduce((acc, e) => acc + (e.side === 'debe' ? e.value : 0), 0).toFixed(2)}€</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>TOTAL HABER</span>
+            <span>{journal.reduce((acc, e) => acc + (e.side === 'haber' ? e.value : 0), 0).toFixed(2)}€</span>
+          </div>
         </div>
       </motion.div>
     </div>
