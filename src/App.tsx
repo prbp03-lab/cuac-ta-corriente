@@ -5,6 +5,13 @@ import type { Coin } from './logic/gameLogic';
 import { LEVELS } from './logic/gameLogic';
 import './index.css';
 
+interface JournalEntry {
+  id: string;
+  value: number;
+  side: 'debe' | 'haber';
+  concept: string;
+}
+
 const App: React.FC = () => {
   const [currentLevelIdx, setCurrentLevelIdx] = useState(0);
   const [tableCoins, setTableCoins] = useState<Coin[]>([]);
@@ -12,6 +19,7 @@ const App: React.FC = () => {
   const [pacoState, setPacoState] = useState<'idle' | 'happy' | 'thinking' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [feedbacks, setFeedbacks] = useState<{ id: string; text: string; x: number; y: number; side: string }[]>([]);
+  const [journal, setJournal] = useState<JournalEntry[]>([]);
 
   const currentLevel = LEVELS[currentLevelIdx];
 
@@ -78,6 +86,7 @@ const App: React.FC = () => {
 
     setTableCoins(newCoins);
     setCurrentBalance(0);
+    setJournal([]);
     setMessage(level.pacoMessage);
     setPacoState('thinking');
   };
@@ -89,6 +98,15 @@ const App: React.FC = () => {
     const valueChange = coin.side === 'debe' ? coin.value : -coin.value;
     const nextBalance = Number((currentBalance + valueChange).toFixed(2));
     setCurrentBalance(nextBalance);
+
+    // Update journal
+    const newEntry: JournalEntry = {
+      id: `entry-${Math.random()}`,
+      value: coin.value,
+      side: coin.side,
+      concept: coin.side === 'debe' ? 'Ingreso monetario' : 'Pago / Gasto'
+    };
+    setJournal(prev => [newEntry, ...prev]);
 
     // Add feedback animation
     const feedbackId = Math.random().toString();
@@ -238,6 +256,53 @@ const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Journal Panel */}
+      <motion.div
+        className="journal-panel"
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+      >
+        <div className="journal-header">LIBRO DIARIO</div>
+        <div className="journal-table-container">
+          <table className="journal-table">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th className="col-debe">Debe</th>
+                <th className="col-haber">Haber</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {journal.map(entry => (
+                  <motion.tr
+                    key={entry.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <td>{entry.concept}</td>
+                    <td className="entry-debe">{entry.side === 'debe' ? `${entry.value.toFixed(2)}€` : ''}</td>
+                    <td className="entry-haber">{entry.side === 'haber' ? `${entry.value.toFixed(2)}€` : ''}</td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+              {journal.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center', opacity: 0.5, padding: '20px' }}>
+                    Esperando transacciones...
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="journal-footer">
+          <span>SALDO NETO:</span>
+          <span>{currentBalance.toFixed(2)}€</span>
+        </div>
+      </motion.div>
     </div>
   );
 };

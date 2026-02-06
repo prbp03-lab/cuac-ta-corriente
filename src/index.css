@@ -175,3 +175,81 @@ body {
     opacity: 0;
   }
 }
+
+/* Journal Panel Styles */
+.journal-panel {
+  position: absolute;
+  right: 30px;
+  top: 110px;
+  width: 320px;
+  max-height: calc(100vh - 140px);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  color: white;
+  overflow: hidden;
+}
+
+.journal-header {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.journal-table-container {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.journal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.journal-table th {
+  text-align: left;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.journal-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.col-debe,
+.entry-debe {
+  color: #8BC34A;
+  text-align: right;
+}
+
+.col-haber,
+.entry-haber {
+  color: #FF7043;
+  text-align: right;
+}
+
+.journal-footer {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  font-weight: 900;
+  font-size: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
