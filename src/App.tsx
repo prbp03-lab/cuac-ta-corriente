@@ -21,20 +21,61 @@ const App: React.FC = () => {
 
   const initLevel = (idx: number) => {
     const level = LEVELS[idx];
-    const newCoins: Coin[] = [];
-    // Generate some random coins based on allowed coins for the level
-    for (let i = 0; i < 8; i++) {
-      const randomVal = level.allowedCoins[Math.floor(Math.random() * level.allowedCoins.length)];
-      const side = level.isMixed ? (Math.random() > 0.6 ? 'haber' : 'debe') : 'debe';
+    let newCoins: Coin[] = [];
 
+    // 1. Force coins to reach the exact targetAmount
+    let remaining = level.targetAmount;
+    const sortedAllowed = [...level.allowedCoins].sort((a, b) => b - a);
+
+    // Greedy-like approach to fulfill the target with standard coins
+    while (remaining > 0.005) { // Small epsilon for float precision
+      const coinVal = sortedAllowed.find(v => v <= Number((remaining + 0.005).toFixed(2))) || sortedAllowed[sortedAllowed.length - 1];
       newCoins.push({
-        id: `coin-${i}-${Math.random()}`,
-        value: randomVal,
-        x: 40 + Math.random() * 40, // 40-80% width
-        y: 40 + Math.random() * 30, // 40-70% height
-        side
+        id: `coin-target-${Math.random()}`,
+        value: coinVal,
+        x: 0, y: 0, // Will randomize later
+        side: 'debe'
       });
+      remaining = Number((remaining - coinVal).toFixed(2));
     }
+
+    // 2. Add "Noise" or "Neutral pairs" for mixed levels or to increase coin count
+    const minCoins = level.id === 4 ? 8 : 6;
+    while (newCoins.length < minCoins) {
+      const randomVal = level.allowedCoins[Math.floor(Math.random() * level.allowedCoins.length)];
+      if (level.isMixed) {
+        // Add a pair that cancels out (one income, one expense)
+        const pairId = Math.random();
+        newCoins.push({
+          id: `coin-plus-${pairId}`,
+          value: randomVal,
+          x: 0, y: 0,
+          side: 'debe'
+        });
+        newCoins.push({
+          id: `coin-minus-${pairId}`,
+          value: randomVal,
+          x: 0, y: 0,
+          side: 'haber'
+        });
+      } else {
+        // Just add more income coins if not mixed (shouldn't really happen with target fulfilled but anyway)
+        newCoins.push({
+          id: `coin-extra-${Math.random()}`,
+          value: randomVal,
+          x: 0, y: 0,
+          side: 'debe'
+        });
+      }
+    }
+
+    // 3. Final Pass: Randomize positions and shuffle
+    newCoins = newCoins.map(c => ({
+      ...c,
+      x: 15 + Math.random() * 70,
+      y: 35 + Math.random() * 45
+    })).sort(() => Math.random() - 0.5);
+
     setTableCoins(newCoins);
     setCurrentBalance(0);
     setMessage(level.pacoMessage);
@@ -67,11 +108,21 @@ const App: React.FC = () => {
         } else {
           setMessage('¡Has completado todos los niveles! ¡Eres un experto en Cuac-ta Corriente!');
         }
-      }, 5000); // Increased from 3000
-    } else if (nextBalance > currentLevel.targetAmount || (nextBalance < 0 && currentLevel.targetAmount > 0)) {
-      setPacoState('error');
-      setMessage('¡Cuac! El balance no cuadra. Prueba otra vez.');
-      setTimeout(() => initLevel(currentLevelIdx), 4000); // Increased from 2000
+      }, 5000);
+    } else if (!currentLevel.isMixed) {
+      // For simple levels, if you overshoot or go under, it's an error
+      if (nextBalance > currentLevel.targetAmount) {
+        setPacoState('error');
+        setMessage('¡Cuac! Te has pasado del total. Prueba otra vez.');
+        setTimeout(() => initLevel(currentLevelIdx), 4000);
+      }
+    } else {
+      // In mixed levels, we don't error out immediately unless there are no coins left and balance isn't target
+      if (tableCoins.length === 1 && nextBalance !== currentLevel.targetAmount) {
+        setPacoState('error');
+        setMessage('¡Cuac! El balance final no es correcto. Repasemos las cuentas.');
+        setTimeout(() => initLevel(currentLevelIdx), 4000);
+      }
     }
   };
 
