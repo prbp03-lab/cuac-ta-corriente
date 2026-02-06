@@ -57,5 +57,45 @@ export const LEVELS: Level[] = [
     pacoMessage: '¿Hemos ganado o perdido hoy? Calcula el saldo final.',
     concept: 'Ingresos - Gastos = Saldo',
     isMixed: true
+  },
+  {
+    id: 5,
+    title: 'El Préstamo',
+    instruction: 'Devuelve el dinero prestado con intereses.',
+    targetAmount: 4.20,
+    allowedCoins: [2, 1, 0.5, 0.1, 0.05],
+    pacoMessage: '¡Cuac! La Ardilla nos prestó avellanas. Hay que devolver 4.20€.',
+    concept: 'Devolución de Préstamos (Intereses)',
+    isMixed: true
+  },
+  {
+    id: 6,
+    title: 'Inmovilizado',
+    instruction: 'Paga las nuevas herramientas del pantano.',
+    targetAmount: 6.50,
+    allowedCoins: [2, 1, 0.5],
+    pacoMessage: 'El Castor ha traído herramientas nuevas. La factura es de 6.50€.',
+    concept: 'Compra de Inmovilizado / Herramientas',
+    isMixed: true
+  },
+  {
+    id: 7,
+    title: 'El Inventario',
+    instruction: 'Gestiona el stock de algas del almacén.',
+    targetAmount: 3.80,
+    allowedCoins: [1, 0.5, 0.2, 0.1],
+    pacoMessage: '¡Cuidado! El Erizo dice que falta stock. Hay que cuadrar 3.80€.',
+    concept: 'Gestión de Existencias e Inventario',
+    isMixed: true
+  },
+  {
+    id: 8,
+    title: 'Auditoría Final',
+    instruction: 'Supera la gran prueba del sabio Búho.',
+    targetAmount: 10.00,
+    allowedCoins: [2, 1, 0.5, 0.2],
+    pacoMessage: '¡El Búho Auditor ha llegado! Demuestra que eres el mejor contable.',
+    concept: 'Cierre del Ejercicio Completo',
+    isMixed: true
   }
 ];
