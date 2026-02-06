@@ -203,22 +203,6 @@ const App: React.FC = () => {
           <p style={{ fontSize: '1.2rem', opacity: 0.9 }}>{currentLevel.concept}</p>
         </motion.div>
 
-        <motion.div
-          className="balance-panel"
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          key={currentBalance}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{currentBalance.toFixed(2)}€</div>
-          </div>
-          <div style={{ height: '40px', width: '1px', background: 'rgba(255,255,255,0.3)' }} />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Meta</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{currentLevel.targetAmount.toFixed(2)}€</div>
-          </div>
-        </motion.div>
       </div>
 
       {/* Main Table Area */}
